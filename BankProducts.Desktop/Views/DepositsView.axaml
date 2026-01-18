@@ -1,0 +1,211 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BankProducts.Desktop.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="BankProducts.Desktop.Views.DepositsView"
+             x:DataType="vm:DepositsViewModel">
+
+    <UserControl.Styles>
+        <Style Selector="CheckBox">
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="Black"/>
+        </Style>
+        <Style Selector="CheckBox:pressed">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="Black"/>
+        </Style>
+        <Style Selector="NumericUpDown">
+            <Setter Property="ShowButtonSpinner" Value="False"/>
+        </Style>
+        <Style Selector="Button:disabled">
+            <Setter Property="Background" Value="#1a1a1aff"/>
+            <Setter Property="Foreground" Value="#E0E0E0"/>
+            <Setter Property="Opacity" Value="1"/>
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!-- Add New Deposit Form -->
+        <Border Grid.Row="0" Background="#E8E8E8" Padding="15" Margin="0,0,0,10" CornerRadius="5">
+            <StackPanel Spacing="12">
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Банка" FontSize="12" Foreground="#424242"/>
+                        <ComboBox ItemsSource="{Binding Banks}"
+                                  SelectedItem="{Binding NewDepositBank}"
+                                  Width="200"
+                                  FontSize="14"
+                                  PlaceholderText="Избери банка">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Име на депозит" FontSize="12" Foreground="#424242"/>
+                        <TextBox Text="{Binding NewDepositName}"
+                                 Watermark="Име на депозит"
+                                 Width="200"
+                                 FontSize="14"/>
+                    </StackPanel>
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Лихва %" FontSize="12" Foreground="#424242"/>
+                        <NumericUpDown Value="{Binding NewDepositInterestRate}"
+                                       Watermark="Лихва %"
+                                       Width="110"
+                                       Minimum="0"
+                                       Maximum="100"
+                                       Increment="0.1"
+                                       FormatString="F2"
+                                       FontSize="14"/>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Минимална сума" FontSize="12" Foreground="#424242"/>
+                        <NumericUpDown Value="{Binding NewDepositMinAmount}"
+                                       Watermark="Мин. сума"
+                                       Width="130"
+                                       Minimum="0"
+                                       FormatString="N0"
+                                       FontSize="14"/>
+                    </StackPanel>
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Срок (месеци)" FontSize="12" Foreground="#424242"/>
+                        <NumericUpDown Value="{Binding NewDepositTermMonths}"
+                                       Watermark="Срок (месеци)"
+                                       Width="130"
+                                       Minimum="1"
+                                       Maximum="120"
+                                       FontSize="14"/>
+                    </StackPanel>
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Валута" FontSize="12" Foreground="#424242"/>
+                        <ComboBox ItemsSource="{Binding CurrencyOptions}"
+                                  SelectedItem="{Binding NewDepositCurrency}"
+                                  Width="90"
+                                  FontSize="14"/>
+                    </StackPanel>
+                    <StackPanel Spacing="4">
+                        <TextBlock Text=" " FontSize="12"/>
+                        <Button Content="Добави депозит"
+                                Command="{Binding AddDepositCommand}"
+                                Background="#2E7D32"
+                                Foreground="White"
+                                FontWeight="SemiBold"
+                                Padding="20,10"/>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="25">
+                    <CheckBox Content="Капитализация" IsChecked="{Binding NewDepositHasCapitalization}" FontSize="13" Foreground="Black"/>
+                    <CheckBox Content="Довнасяне" IsChecked="{Binding NewDepositAllowsAdditionalDeposits}" FontSize="13" Foreground="Black"/>
+                    <CheckBox Content="Частично теглене" IsChecked="{Binding NewDepositAllowsPartialWithdrawal}" FontSize="13" Foreground="Black"/>
+                    <CheckBox Content="Автоподновяване" IsChecked="{Binding NewDepositAutoRenewal}" FontSize="13" Foreground="Black"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Deposits List -->
+        <DataGrid Grid.Row="1"
+                  ItemsSource="{Binding Deposits}"
+                  SelectedItem="{Binding SelectedDeposit}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  CanUserResizeColumns="True"
+                  GridLinesVisibility="Horizontal"
+                  FontSize="14"
+                  Background="White"
+                  Foreground="Black"
+                  BorderBrush="#BDBDBD"
+                  BorderThickness="1">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Банка" Binding="{Binding Bank.Name}" Width="160" CanUserResize="True"/>
+                <DataGridTextColumn Header="Име" Binding="{Binding Name}" Width="*" CanUserResize="True"/>
+                <DataGridTextColumn Header="Лихва %" Binding="{Binding InterestRate, StringFormat='{}{0:F2}'}" Width="80" CanUserResize="True"/>
+                <DataGridTextColumn Header="Срок" Binding="{Binding TermMonths}" Width="60" CanUserResize="True"/>
+                <DataGridTextColumn Header="Мин. сума" Binding="{Binding MinAmount, StringFormat='{}{0:N0}'}" Width="100" CanUserResize="True"/>
+                <DataGridTextColumn Header="Валута" Binding="{Binding Currency}" Width="70" CanUserResize="True"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Actions Panel -->
+        <Border Grid.Row="2" Background="#E8E8E8" Padding="15" Margin="0,10,0,0" CornerRadius="5">
+            <StackPanel>
+                <!-- Normal view -->
+                <StackPanel Orientation="Horizontal" Spacing="15"
+                            IsVisible="{Binding !IsEditing}">
+                    <Button Content="Редактирай"
+                            Command="{Binding StartEditCommand}"
+                            IsEnabled="{Binding SelectedDeposit, Converter={x:Static ObjectConverters.IsNotNull}}"
+                            Background="#1976D2"
+                            Foreground="White"
+                            FontWeight="SemiBold"
+                            Padding="20,10"/>
+                    <Button Content="Изтрий"
+                            Command="{Binding DeleteDepositCommand}"
+                            IsEnabled="{Binding SelectedDeposit, Converter={x:Static ObjectConverters.IsNotNull}}"
+                            Background="#C62828"
+                            Foreground="White"
+                            FontWeight="SemiBold"
+                            Padding="20,10"/>
+                </StackPanel>
+
+                <!-- Edit view -->
+                <StackPanel IsVisible="{Binding IsEditing}" Spacing="12">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <TextBox Text="{Binding EditDepositName}"
+                                 Watermark="Име на депозит"
+                                 Width="200"
+                                 FontSize="14"/>
+                        <NumericUpDown Value="{Binding EditDepositInterestRate}"
+                                       Watermark="Лихва %"
+                                       Width="110"
+                                       Minimum="0"
+                                       Maximum="100"
+                                       Increment="0.1"
+                                       FormatString="F2"
+                                       FontSize="14"/>
+                        <NumericUpDown Value="{Binding EditDepositMinAmount}"
+                                       Watermark="Мин. сума"
+                                       Width="130"
+                                       Minimum="0"
+                                       FormatString="N0"
+                                       FontSize="14"/>
+                        <NumericUpDown Value="{Binding EditDepositTermMonths}"
+                                       Watermark="Срок (месеци)"
+                                       Width="110"
+                                       Minimum="1"
+                                       Maximum="120"
+                                       FontSize="14"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="25">
+                        <CheckBox Content="Капитализация" IsChecked="{Binding EditDepositHasCapitalization}" FontSize="13" Foreground="Black"/>
+                        <CheckBox Content="Довнасяне" IsChecked="{Binding EditDepositAllowsAdditionalDeposits}" FontSize="13" Foreground="Black"/>
+                        <CheckBox Content="Частично теглене" IsChecked="{Binding EditDepositAllowsPartialWithdrawal}" FontSize="13" Foreground="Black"/>
+                        <CheckBox Content="Автоподновяване" IsChecked="{Binding EditDepositAutoRenewal}" FontSize="13" Foreground="Black"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="15">
+                        <Button Content="Запази"
+                                Command="{Binding SaveEditCommand}"
+                                Background="#2E7D32"
+                                Foreground="White"
+                                FontWeight="SemiBold"
+                                Padding="20,10"/>
+                        <Button Content="Отказ"
+                                Command="{Binding CancelEditCommand}"
+                                Background="#757575"
+                                Foreground="White"
+                                FontWeight="SemiBold"
+                                Padding="20,10"/>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>
