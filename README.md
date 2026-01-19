@@ -82,7 +82,7 @@
 
 ### Предварителни изисквания
 
-- [.NET 8.0 SDK](https://dotnet.microsoft.com/download)
+- [.NET 10.0 SDK](https://dotnet.microsoft.com/download)
 - [MySQL Server 8.0+](https://dev.mysql.com/downloads/)
 - [Node.js 18+ и npm](https://nodejs.org/) (за Vue.js приложението)
 
